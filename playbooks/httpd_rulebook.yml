@@ -1,0 +1,19 @@
+---
+- name: Remediation - Restart and Enable Apache
+  hosts: "{{ ansible_eda.event.payload.host }}"
+  become: true
+  tasks:
+    - name: Ensure httpd is running and enabled
+      ansible.builtin.systemd:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Verify service is now up
+      ansible.builtin.systemd:
+        name: httpd
+      register: httpd_status
+
+    - name: Log result
+      ansible.builtin.debug:
+        msg: "Httpd is now {{ httpd_status.status.ActiveState }}"

@@ -1,0 +1,13 @@
+---
+- name: Monitor httpd Service
+  hosts: all
+  sources:
+    - ansible.eda.webhook:
+        port: 5000
+
+  rules:
+    - name: Restart httpd when down
+      condition: event.payload.service == "httpd" and event.payload.status == "down"
+      action:
+        run_playbook:
+          name: restart_httpd.yml
