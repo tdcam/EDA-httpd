@@ -1,13 +1,17 @@
 ---
-- name: Monitor httpd Service
+- name: Monitor Httpd Service
   hosts: all
   sources:
     - ansible.eda.webhook:
-        port: 5001
+        port: 5000
 
   rules:
     - name: Restart httpd when down
       condition: event.payload.service == "httpd" and event.payload.status == "down"
       action:
-        run_playbook:
-          name: restart_httpd.yml
+        run_job_template:
+          name: "Remediation - Restart Httpd"
+          organization: "Default"
+          # This passes the host from the webhook to the Job Template
+          job_args:
+            limit: "{{ event.payload.host }}"

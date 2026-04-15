@@ -1,6 +1,6 @@
 ---
 - name: Remediation - Restart and Enable Apache
-  hosts: "{{ ansible_eda.event.payload.host }}"
+  hosts: all  # The "limit" passed from EDA will restrict this to the specific host
   become: true
   tasks:
     - name: Ensure httpd is running and enabled
@@ -9,11 +9,11 @@
         state: started
         enabled: true
 
-    - name: Verify service is now up
+    - name: Verify service state
       ansible.builtin.systemd:
         name: httpd
       register: httpd_status
 
-    - name: Log result
+    - name: Report Success
       ansible.builtin.debug:
-        msg: "Httpd is now {{ httpd_status.status.ActiveState }}"
+        msg: "Apache httpd is now {{ httpd_status.status.ActiveState }} on {{ inventory_hostname }}"
